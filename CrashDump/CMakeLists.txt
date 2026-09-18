@@ -15,6 +15,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # jamais de variable globale comme CMAKE_CXX_FLAGS.
 add_executable(CrashDump src/main.cpp)
 
+target_link_libraries(CrashDump PRIVATE dbghelp)
+
 # Warnings stricts appliqués UNIQUEMENT à cette cible (PRIVATE = pas propagé
 # à qui l'utiliserait comme dépendance, ce qui n'a pas de sens ici de toute façon
 # vu qu'un exécutable n'est jamais "linké" par un autre projet).

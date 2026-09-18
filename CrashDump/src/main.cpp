@@ -2,8 +2,6 @@
 #include <dbghelp.h>
 #include <iostream>
 
-#pragma comment(lib, "dbghelp.lib")
-
 LONG WINAPI CrashHandler(EXCEPTION_POINTERS* pException)
 {
     HANDLE hFile = CreateFile(
