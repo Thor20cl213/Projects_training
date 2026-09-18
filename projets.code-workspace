@@ -1,0 +1,24 @@
+{
+  "folders": [
+    { "name": "CrashDump", "path": "CrashDump" },
+    { "name": "Hashcode", "path": "Hashcode" },
+    { "name": "HelloWorld", "path": "HelloWorld" },
+    { "name": "LockFreeStack", "path": "LockFreeStack" },
+    { "name": "MonteCarlo", "path": "MonteCarlo" },
+    { "name": "NthRootProject", "path": "NthRootProject" },
+    { "name": "SharedPtr", "path": "SharedPtr" },
+    { "name": "ThreadPool", "path": "ThreadPool" },
+    { "name": "VTable", "path": "VTable" }
+  ],
+  "settings": {
+    "files.associations": {
+      "iostream": "cpp",
+      "cstring": "cpp",
+      "algorithm": "cpp"
+    },
+    "cmake.configureOnOpen": false,
+    "cmake.defaultConfigurePreset": "clang23-debug",
+    "C_Cpp.default.compilerPath": "C:/Program Files/clang+llvm-20.1.8-x86_64-pc-windows-msvc/bin/clang++.exe",
+    "C_Cpp.default.cppStandard": "c++23"
+  }
+}

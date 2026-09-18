@@ -1,0 +1,11 @@
+{
+  "files.associations": {
+    "iostream": "cpp",
+    "cstring": "cpp",
+    "algorithm": "cpp"
+  },
+  "cmake.buildDirectory": "${sourceDirectory}/build",
+  "cmake.defaultConfigurePreset": "clang23-debug",
+  "C_Cpp.default.compilerPath": "C:/Program Files/clang+llvm-20.1.8-x86_64-pc-windows-msvc/bin/clang++.exe",
+  "C_Cpp.default.cppStandard": "c++23"
+}

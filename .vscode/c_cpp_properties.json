@@ -1,0 +1,15 @@
+{
+  "configurations": [
+    {
+      "name": "Windows-Clang",
+      "compilerPath": "C:/Program Files/clang+llvm-20.1.8-x86_64-pc-windows-msvc/bin/clang.exe",
+      "cStandard": "c17",
+      "cppStandard": "c++23",
+      "intelliSenseMode": "windows-clang-x64",
+      "includePath": [
+        "${workspaceFolder}/**"
+      ]
+    }
+  ],
+  "version": 4
+}

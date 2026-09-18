@@ -1,0 +1,41 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build trainingGit",
+      "type": "shell",
+      "command": "clang++",
+      "args": [
+        "-std=c++23", "-Wall", "-Wextra",
+        "${workspaceFolder}/trainingGit/main.cpp",
+        "-o", "${workspaceFolder}/trainingGit/bin/main.exe"
+      ],
+      "group": "build",
+      "problemMatcher": "$gcc"
+    },
+    {
+      "label": "Build Entrainement",
+      "type": "shell",
+      "command": "clang++",
+      "args": [
+        "-std=c++23", "-Wall", "-Wextra",
+        "${workspaceFolder}/Entrainement/main.cpp",
+        "-o", "${workspaceFolder}/Entrainement/bin/main.exe"
+      ],
+      "group": "build",
+      "problemMatcher": "$gcc"
+    },
+    {
+      "label": "Build vtabletest",
+      "type": "shell",
+      "command": "clang++",
+      "args": [
+        "-std=c++23", "-Wall", "-Wextra",
+        "${workspaceFolder}/vtabletest/main.cpp",
+        "-o", "${workspaceFolder}/vtabletest/bin/main.exe"
+      ],
+      "group": "build",
+      "problemMatcher": "$gcc"
+    }
+  ]
+}
