@@ -1,3 +1,4 @@
+#include <atomic>
 #include <cstdlib>
 #include <iostream>
 #include <utility>  // std::to_underlying (C++23)
