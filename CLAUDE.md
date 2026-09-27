@@ -18,6 +18,11 @@ NomDuProjet/
 Toolchain locale : Clang 20.1.8 (`C:/Program Files/clang+llvm-20.1.8-x86_64-pc-windows-msvc`),
 preset CMake `clang23-debug`. Voir `.vscode/settings.json` / `c_cpp_properties.json`.
 
+Le Dockerfile/.dockerignore n'a de sens que pour un exécutable autonome qu'on veut lancer tel
+quel dans un conteneur. Pour une librairie destinée à être buildée/utilisée en local
+(ex. `DateLibrary`), ne pas en ajouter par défaut — demander si un cas d'usage conteneurisé est
+réellement voulu avant d'en créer un.
+
 ## Build
 
 ```
@@ -35,11 +40,12 @@ cmake --build <Projet>/build
 
 - **CrashDump** — voir section dédiée ci-dessous, cas particulier.
 - **DateLibrary** — seul projet du repo structuré comme une vraie librairie (cible CMake
-  `datelib` séparée de l'exécutable de démo `DateLibraryDemo`, API publique sous `include/`).
-  Type `Date` immuable construit au-dessus de `std::chrono` (calendrier grégorien, arithmétique
-  de jours/mois/années avec troncature explicite en fin de mois, parsing/format ISO 8601,
-  exception dédiée `InvalidDateException`). Pensé comme terrain d'exercice pour la conception
-  d'API (séparation interface/implémentation, types forts, immutabilité, `operator<=>` défaulté).
+  `datelib` séparée de l'exécutable de démo `DateLibraryDemo`, API publique sous `include/`,
+  **pas de Dockerfile** — usage local uniquement, voir remarque ci-dessus). Type `Date` immuable
+  construit au-dessus de `std::chrono` (calendrier grégorien, arithmétique de jours/mois/années
+  avec troncature explicite en fin de mois, parsing/format ISO 8601, exception dédiée
+  `InvalidDateException`). Pensé comme terrain d'exercice pour la conception d'API (séparation
+  interface/implémentation, types forts, immutabilité, `operator<=>` défaulté).
 - **HelloWorld** — sanity check minimal du toolchain (C++23 `std::to_underlying`).
 - **Hashcode** — génération de collisions de hash sur une classe custom, avec timeout via
   `std::async`.
