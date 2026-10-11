@@ -3,6 +3,7 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#include <stop_token>
 #include <future>
 #include <functional>
 #include <iostream>
@@ -12,11 +13,11 @@
 
 class ThreadPool {
 public:
-    ThreadPool(size_t numThreads):
-        stop_(false) {
-          //Créer numThreads threads et les ajouter au vecteur workers
+    ThreadPool(size_t numThreads) {
+          //Créer numThreads jthreads et les ajouter au vecteur workers
+          //Chaque worker reçoit un stop_token lié au stop_source du pool
         for (size_t i = 0; i < numThreads; ++i) {
-            workers.emplace_back(&ThreadPool::workerThread, this);
+            workers.emplace_back(&ThreadPool::workerThread, this, stopSource_.get_token());
         }
     }
 
@@ -37,7 +38,7 @@ public:
         //Ajouter la tâche à la queue de tâches (thread-safe)
         {
             std::lock_guard<std::mutex> lock(queueMutex_);
-            if(stop_) {
+            if(stopSource_.stop_requested()) {
                 throw std::runtime_error("ThreadPool is stopped");
             }
             tasks.push([task]() {(*task)();}); //Wrapper dans std::function<void()>
@@ -49,28 +50,23 @@ public:
     }
       ~ThreadPool()
       {
-        //signaler à tous les threads de s'arrêter et attendre qu'ils terminent
-        {
-            std::lock_guard<std::mutex> lock(queueMutex_);
-            stop_ = true;
-        }
+        //signaler à tous les threads de s'arrêter : le wait() sur le stop_token les réveille tout seul
+        stopSource_.request_stop();
 
-        condition_.notify_all();
-
-        for (std::thread &worker : workers) {
-            worker.join();
-        }
+        //le join est fait par le destructeur des jthreads, on le déclenche ici
+        //pour que les workers soient terminés avant la destruction de la queue et du mutex
+        workers.clear();
       }
 
   private:
 
-    std::vector<std::thread> workers;
+    std::vector<std::jthread> workers;
     std::queue<std::function<void()>> tasks;
     std::mutex queueMutex_;
-    std::condition_variable condition_;
-    bool stop_;
+    std::condition_variable_any condition_;
+    std::stop_source stopSource_;
 
-    void workerThread() {
+    void workerThread(std::stop_token stopToken) {
         while (true) {
             std::function<void()> task;
 
@@ -78,11 +74,11 @@ public:
             {
                 std::unique_lock<std::mutex> lock(queueMutex_);
 
-                //Attendre jusqu'à ce qu'une tâche soit disponible ou que le thread pool soit arrêté
-                condition_.wait(lock, [this] { return stop_ || !tasks.empty(); });
+                //Attendre jusqu'à ce qu'une tâche soit disponible ou qu'un arrêt soit demandé via le stop_token
+                condition_.wait(lock, stopToken, [this] { return !tasks.empty(); });
 
-                //Si stop_ est vrai et qu'il n'y a plus de tâches, sortir de la boucle
-                if (stop_ && tasks.empty()) {
+                //Si on est réveillé sans tâche, c'est que l'arrêt est demandé : sortir de la boucle
+                if (tasks.empty()) {
                     return;
                 }
 
