@@ -2,6 +2,7 @@
 #include <queue>
 #include <thread>
 #include <mutex>
+#include <condition_variable>
 #include <functional>
 #include <iostream>
 
@@ -20,11 +21,16 @@ public:
 
     void submit(std::function<void()> task) {
         //Ajouter la tâche à la queue de tâches (thread-safe)
-        std::lock_guard<std::mutex> lock(queueMutex_);
-        if(stop_) {
-            throw std::runtime_error("ThreadPool is stopped");
+        {
+            std::lock_guard<std::mutex> lock(queueMutex_);
+            if(stop_) {
+                throw std::runtime_error("ThreadPool is stopped");
+            }
+            tasks.push(std::move(task));
         }
-        tasks.push(std::move(task));
+
+        //Notifier un thread en attente qu'une nouvelle tâche est disponible
+        condition_.notify_one();
     }
 
       ~ThreadPool()
@@ -34,6 +40,8 @@ public:
             std::lock_guard<std::mutex> lock(queueMutex_);
             stop_ = true;
         }
+
+        condition_.notify_all();
 
         for (std::thread &worker : workers) {
             worker.join();
@@ -45,23 +53,23 @@ public:
     std::vector<std::thread> workers;
     std::queue<std::function<void()>> tasks;
     std::mutex queueMutex_;
+    std::condition_variable condition_;
     bool stop_;
 
     void workerThread() {
         while (true) {
             std::function<void()> task;
 
+            //Attendre une tache ou un signal d'arret
             {
-                std::lock_guard<std::mutex> lock(queueMutex_);
+                std::unique_lock<std::mutex> lock(queueMutex_);
+
+                //Attendre jusqu'à ce qu'une tâche soit disponible ou que le thread pool soit arrêté
+                condition_.wait(lock, [this] { return stop_ || !tasks.empty(); });
 
                 //Si stop_ est vrai et qu'il n'y a plus de tâches, sortir de la boucle
                 if (stop_ && tasks.empty()) {
                     return;
-                }
-
-                //Attente active : on relâche le verrou et on reboucle tant qu'il n'y a rien à faire
-                if (tasks.empty()) {
-                    continue;
                 }
 
                 //prendre la première tâche de la queue et la retirer de la queue
