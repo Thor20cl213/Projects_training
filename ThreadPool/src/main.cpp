@@ -1,6 +1,7 @@
 #include <vector>
 #include <queue>
 #include <thread>
+#include <mutex>
 #include <functional>
 #include <iostream>
 
@@ -18,14 +19,21 @@ public:
     }
 
     void submit(std::function<void()> task) {
-        //Ajouter la tâche à la queue de tâches (pas thread-safe)
+        //Ajouter la tâche à la queue de tâches (thread-safe)
+        std::lock_guard<std::mutex> lock(queueMutex_);
+        if(stop_) {
+            throw std::runtime_error("ThreadPool is stopped");
+        }
         tasks.push(std::move(task));
     }
 
       ~ThreadPool()
       {
         //signaler à tous les threads de s'arrêter et attendre qu'ils terminent
-        stop_ = true;
+        {
+            std::lock_guard<std::mutex> lock(queueMutex_);
+            stop_ = true;
+        }
 
         for (std::thread &worker : workers) {
             worker.join();
@@ -36,23 +44,30 @@ public:
 
     std::vector<std::thread> workers;
     std::queue<std::function<void()>> tasks;
+    std::mutex queueMutex_;
     bool stop_;
 
     void workerThread() {
         while (true) {
-            //Si stop_ est vrai et qu'il n'y a plus de tâches, sortir de la boucle
-            if (stop_ && tasks.empty()) {
-                return;
-            }
+            std::function<void()> task;
 
-            //Attente active : on reboucle tant qu'il n'y a rien à faire
-            if (tasks.empty()) {
-                continue;
-            }
+            {
+                std::lock_guard<std::mutex> lock(queueMutex_);
 
-            //prendre la première tâche de la queue et la retirer de la queue
-            std::function<void()> task = std::move(tasks.front());
-            tasks.pop();
+                //Si stop_ est vrai et qu'il n'y a plus de tâches, sortir de la boucle
+                if (stop_ && tasks.empty()) {
+                    return;
+                }
+
+                //Attente active : on relâche le verrou et on reboucle tant qu'il n'y a rien à faire
+                if (tasks.empty()) {
+                    continue;
+                }
+
+                //prendre la première tâche de la queue et la retirer de la queue
+                task = std::move(tasks.front());
+                tasks.pop();
+            }
 
             task();
         }
