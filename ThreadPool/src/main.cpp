@@ -21,14 +21,14 @@ public:
     }
 
     template<typename F,typename... Args>
-    auto submit(F f, Args... args) -> std::future<decltype(f(args...))> {
+    auto submit(F&& f, Args&&... args) -> std::future<decltype(f(args...))> {
 
       //type de retour de la fonction f avec les arguments args
         using return_type = decltype(f(args...));
 
         //Créer un packaged_task pour encapsuler la fonction f avec les arguments args
         auto task = std::make_shared<std::packaged_task<return_type()>>(
-          [f, args...]() mutable { return f(args...); }
+          [f=std::forward<F>(f), args...]() mutable { return f(args...); }
         );
 
         //Récupérer le futur avant de move la stack
