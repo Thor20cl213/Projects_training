@@ -28,4 +28,4 @@ RUN cmake --build build
 
 # Commande exécutée quand tu fais "docker run" (pas pendant le build).
 # C'est la 3ème étape : le run.
-CMD ["./build/hello_app"]
+CMD ["./build/CrashDump"]
