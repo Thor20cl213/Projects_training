@@ -55,9 +55,9 @@ Calendrier calendrier()
   return matchs;
 }
 
-void task(int num_thread, const Calendrier& matchs, Stats& stats)
+void task(const Calendrier& matchs, Stats& stats)
 {
-  std::mt19937_64 seed{static_cast<unsigned long long>(42+num_thread)};
+  std::mt19937_64 seed{std::random_device{}()};
   std::uniform_real_distribution<double> dist{0.0,1.0};
   std::array<int, NB_EQUIPES> points;
 
@@ -141,7 +141,7 @@ int main() {
     std::vector<std::jthread> threads;
     for(int i = 0;i<NB_THREADS;i++)
     {
-      threads.emplace_back(&task, i, std::cref(matchs), std::ref(stats_threads[i]));
+      threads.emplace_back(&task, std::cref(matchs), std::ref(stats_threads[i]));
     }
   }
 
