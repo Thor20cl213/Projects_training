@@ -1,5 +1,6 @@
 {
   "folders": [
+    { "name": "ChampionsLeague", "path": "ChampionsLeague" },
     { "name": "CrashDump", "path": "CrashDump" },
     { "name": "DateLibrary", "path": "DateLibrary" },
     { "name": "Hashcode", "path": "Hashcode" },

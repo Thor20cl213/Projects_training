@@ -39,6 +39,8 @@ cmake --build <Projet>/build
 ## Inventaire des projets
 
 - **CrashDump** — voir section dédiée ci-dessous, cas particulier.
+- **ChampionsLeague** — simulation Monte-Carlo multithreadée de la phase de ligue (36 équipes,
+  8 matchs, équipes de force égale) pour estimer les paliers de points du top 8 et du top 24.
 - **DateLibrary** — seul projet du repo structuré comme une vraie librairie (cible CMake
   `datelib` séparée de l'exécutable de démo `DateLibraryDemo`, API publique sous `include/`,
   **pas de Dockerfile** — usage local uniquement, voir remarque ci-dessus). Type `Date` immuable
