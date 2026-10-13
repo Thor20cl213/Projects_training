@@ -47,6 +47,9 @@ build.ninja
 .vscode/*.log
 .vscode/.ropeproject/
 
+# clangd index cache, generated per project
+**/.cache/
+
 # ============================================================
 # CMake User Presets
 # ============================================================
