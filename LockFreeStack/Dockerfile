@@ -1,6 +1,8 @@
 # Image de base avec Debian + toutes les libs système classiques.
-# "bookworm-slim" = Debian 12 allégée (moins de paquets inutiles que l'image complète).
-FROM debian:bookworm-slim
+# "trixie-slim" = Debian 13 allégée (moins de paquets inutiles que l'image complète).
+# Debian 13 et pas 12 : il faut GCC 14 pour avoir l'en-tête <print> (std::println),
+# alors que Debian 12 "bookworm" ne fournit que GCC 12.
+FROM debian:trixie-slim
 
 # Installe le strict nécessaire pour compiler du C++ :
 # - build-essential : gcc, g++, make, libc-dev

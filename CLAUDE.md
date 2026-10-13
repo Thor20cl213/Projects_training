@@ -9,7 +9,7 @@ projet autonome avec sa propre cible CMake — il n'y a pas de code partagé ent
 ```
 NomDuProjet/
   CMakeLists.txt   # cmake_minimum_required 3.20, C++23, warnings -Wall -Wextra -Wpedantic
-  Dockerfile       # image debian:bookworm-slim, build via cmake+ninja
+  Dockerfile       # image debian:trixie-slim (GCC 14, requis pour <print>), build via cmake+ninja
   .dockerignore
   src/main.cpp     # tout le code tient dans un seul fichier
   build/           # généré, ne pas éditer à la main
@@ -21,7 +21,8 @@ preset CMake `clang23-debug`. Voir `.vscode/settings.json` / `c_cpp_properties.j
 Le Dockerfile/.dockerignore n'a de sens que pour un exécutable autonome qu'on veut lancer tel
 quel dans un conteneur. Pour une librairie destinée à être buildée/utilisée en local
 (ex. `DateLibrary`), ne pas en ajouter par défaut — demander si un cas d'usage conteneurisé est
-réellement voulu avant d'en créer un.
+réellement voulu avant d'en créer un. `CrashDump` n'en a pas non plus : il dépend de `dbghelp.h`
+et ne peut pas se builder dans un conteneur Linux.
 
 ## Build
 
